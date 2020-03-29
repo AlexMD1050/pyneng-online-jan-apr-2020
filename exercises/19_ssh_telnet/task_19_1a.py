@@ -10,3 +10,35 @@
 
 Для проверки измените пароль на устройстве или в файле devices.yaml.
 """
+from netmiko import ConnectHandler
+from netmiko.ssh_exception import NetmikoAuthenticationException
+from netmiko.ssh_exception import *
+import yaml
+from pprint import pprint
+
+command = 'sh ip int brief'
+# task_19_1
+def send_show_command(device, command):
+    '''
+    Подключение к одному устройству
+    :param device:
+    :param command:
+    :return:
+   '''
+    try:
+        with ConnectHandler(**device) as ssh:
+            ssh.enable()    #помнить что некоторые команды можно выполнять и без en режима
+            result = ssh.send_command(command)
+            ip = device['ip']
+            print('connect to device {}'.format(ip))
+    except NetmikoAuthenticationException:
+        result = "Authentication Error Exception"
+    return result
+
+if __name__ == "__main__":
+    with open('test.yaml') as f:
+        templates = yaml.load(f)
+    list_of_dict = templates['routers']
+    for dev in list_of_dict:
+        result = send_show_command(dev, command)
+        print(result)

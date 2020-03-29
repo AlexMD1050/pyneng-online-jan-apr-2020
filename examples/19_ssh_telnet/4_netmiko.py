@@ -2,13 +2,19 @@ import getpass
 import sys
 
 from netmiko import ConnectHandler
+command = 'sh ver'
+#command = sys.argv[1]
+#user = input("Username: ")
+user = 'cisco'
+#password = getpass.getpass()
+#password = input("Password: ")
+password = 'cisco'
+print('--')
+#enable_pass = getpass.getpass(prompt="Enter enable password: ") # почему не работает getpass???
+#enable_pass = input("Enable Password: ")
+enable_pass = 'cisco'
 
-command = sys.argv[1]
-user = input("Username: ")
-password = getpass.getpass()
-enable_pass = getpass.getpass(prompt="Enter enable password: ")
-
-devices_ip = ["192.168.100.1", "192.168.100.2", "192.168.100.3"]
+devices_ip = ["172.16.1.3"]
 
 for ip in devices_ip:
     print("connection to device {}".format(ip))
@@ -25,6 +31,10 @@ for ip in devices_ip:
 
         result = ssh.send_command(command)
         print(result)
+
+
+
+
 """
 Examples:
 $ python 4_netmiko.py

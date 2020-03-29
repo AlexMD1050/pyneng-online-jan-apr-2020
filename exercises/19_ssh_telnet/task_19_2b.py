@@ -96,5 +96,57 @@ R1(config)#a
 # списки команд с ошибками и без:
 commands_with_errors = ["logging 0255.255.1", "logging", "a"]
 correct_commands = ["logging buffered 20010", "ip http server"]
-
 commands = commands_with_errors + correct_commands
+
+from netmiko import ConnectHandler
+import yaml
+from pprint import pprint
+
+#commands = ["logging 10.255.255.1", "logging buffered 20010", "no logging console"]
+
+def send_config_commands(device, commands, log = True):
+    '''
+    Функция передачи команд на устройство с контролем результатат выполнения
+    :param device: устройство на котором выполняются команды
+    :param command: список команд
+    :param log: вывод на stdout информации о подключении к IPадресу устройства
+    :return: кортеж из 2х словарей ( успешные и неудачные команды)
+   '''
+    with ConnectHandler(**device) as ssh:
+        ssh.enable()    #помнить что некоторые команды можно выполнять и без en режима
+        ip = device['ip']
+        dict_r = {} #словарь безошибочных команд
+        dict_w = {} #словарь команд с ошибкой
+        list_command = []
+        error_text = 'Команда "{}" выполнилась с ошибкой "{}" на устройстве "{}"'
+        if log == True:
+            print('Подключаюсь к {}...'.format(ip))
+        else:
+            pass
+        for command in commands:
+            result = ssh.send_config_set(command,) # попробовать оптимизировать
+            list_a = result.split('\n') #переделать на regexp
+            # как то переделать if/elif statement
+            # знаем что в определенных позициях списка могут содержатся значения с результатом выполнения программы
+            if ('Ambiguous command:') in list_a[4] or ('Incomplete command') in list_a[4] or ('Invalid input detected') in list_a[4]:
+                print('===' + error_text.format(command, list_a[4], ip))
+                dict_w[command] = result
+#                list_command.append(dict_w)
+            elif ('Ambiguous command:') in list_a[3] or ('Incomplete command') in list_a[3] or ('Invalid input detected') in list_a[3]:
+                print('---' + error_text.format(command, list_a[3], ip))
+                dict_w[command] = result
+#                list_command.append(dict_w)
+            else:
+                dict_r[command] = result
+        list_command.append(dict_r)
+        list_command.append(dict_w)
+        result_tuple = tuple(list_command)
+        return result_tuple
+
+if __name__ == "__main__":  # часть относится к скрипту, а не к функции
+    with open('test.yaml') as f:    #заменить на 'devices.yaml'
+        templates = yaml.load(f)
+    list_of_dev = templates['routers'] #список устройств - параметры подключения к одному устройсву это словарь
+    for dev in list_of_dev:
+        result = send_config_commands(dev, commands, log=True)
+        pprint(result, width=120)

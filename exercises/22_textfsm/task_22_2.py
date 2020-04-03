@@ -14,3 +14,11 @@
 
 Проверить работу шаблона с помощью функции parse_command_output из задания 22.1.
 """
+import textfsm
+from task_22_1 import parse_command_output
+
+if __name__ == "__main__":
+    print(parse_command_output('templates/sh_ip_dhcp_snooping.template', 'output/sh_ip_dhcp_snooping.txt'))
+
+
+

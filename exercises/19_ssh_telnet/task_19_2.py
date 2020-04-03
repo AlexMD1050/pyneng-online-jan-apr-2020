@@ -54,14 +54,13 @@ device = '172.16.1.2'
 
 def send_config_commands(device, commands):
     '''
-
     :param device: список устройств к которым подключаемся из yaml файла
     :param command: список команд которые выполняем на КАЖДОМ из устройств к которому подключаемся
     :return: возвращаем список с результатом выполнения команд
    '''
     with ConnectHandler(**device) as ssh:
         ssh.enable()    #помнить что некоторые команды можно выполнять и без en режима
-        output = ssh.send_config_set(commands)
+        output = ssh.send_config_set(commands, strip_prompt=False  )
         ip = device['ip']
         print('Подключаюсь к {}...'.format(ip))
         return output

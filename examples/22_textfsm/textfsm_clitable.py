@@ -1,8 +1,11 @@
 # или import clitable, если версия textfsm == 0.4
+import textfsm
+import os
 from textfsm import clitable
 import sys
+#import clitable
 
-command = sys.argv[1]
+#command = sys.argv[1]
 output_file = sys.argv[2]
 
 with open(output_file) as output:

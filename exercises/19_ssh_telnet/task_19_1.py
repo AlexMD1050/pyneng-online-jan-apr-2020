@@ -36,7 +36,7 @@ def send_show_command(device, command):
         return result
 
 if __name__ == "__main__":  # часть относится к скрипту, а не к функции
-    with open('devices.yaml') as f:
+    with open('test.yaml') as f:
         templates = yaml.load(f)
     list_of_dict = templates['routers'] #список устройств - параметры подключения к одному устройсву это словарь
     for dev in list_of_dict:

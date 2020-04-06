@@ -67,6 +67,6 @@ class CiscoTelnet:
 
 
 if __name__ == "__main__":
-    with CiscoTelnet("192.168.100.1", "cisco", "cisco", "cisco") as r1:
+    with CiscoTelnet("172.16.1.2", "cisco", "cisco", "cisco") as r1:
         print(r1.send_show_command("sh ip int br"))
         raise ValueError

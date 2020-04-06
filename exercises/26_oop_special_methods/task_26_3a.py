@@ -32,3 +32,29 @@ In [12]: print(ip_list)
 
 Для этого задания нет теста!
 """
+import ipaddress
+
+class IPAddress:
+    def __init__(self,ip_mask):
+        self.ip = ip_mask.split('/')[0]
+        self.mask = ip_mask.split('/')[1]
+        if not ipaddress.ip_address(self.ip):
+            raise ValueError('Incorrect IPv4 address')
+        if not int(self.mask) >8 and int(self.mask)<32:
+            raise ValueError('Incorrect mask')
+#        print('===')
+        self.ip = ip_mask.split('/')[0]
+        self.mask = ip_mask.split('/')[1]
+
+    def __str__(self):
+        return f"IP address: {self.ip}/{self.mask}"
+
+    def __repr__(self):
+        return f"IPAddress('{self.ip}/{self.mask}')"
+
+if __name__ == "__main__":
+    ip1 =IPAddress('192.168.1.1/26')
+    print(str(ip1))
+    ip_list = []
+    ip_list.append(ip1)
+    print(ip_list)

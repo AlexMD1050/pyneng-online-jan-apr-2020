@@ -4,16 +4,10 @@
 Задание 25.1a
 
 Скопировать класс Topology из задания 25.1 и изменить его.
-
 Если в задании 25.1 удаление дублей выполнялось в методе __init__,
 надо перенести функциональность удаления дублей в метод _normalize.
-
 При этом метод __init__ должен выглядеть таким образом:
 """
-
-
-
-
 
 topology_example = {
     ("R1", "Eth0/0"): ("SW1", "Eth0/1"),
@@ -44,6 +38,6 @@ class Topology:
             else:
                 pass
         return dict_comm2
-
-#top = Topology(topology_example)
-#print(top.topology)
+if __name__=="__main__":
+    top = Topology(topology_example)
+    print(top.topology)

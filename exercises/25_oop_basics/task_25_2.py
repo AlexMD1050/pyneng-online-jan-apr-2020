@@ -2,17 +2,13 @@
 
 """
 Задание 25.2
-
 Создать класс CiscoTelnet, который подключается по Telnet к оборудованию Cisco.
-
 При создании экземпляра класса, должно создаваться подключение Telnet, а также переход в режим enable.
 Класс должен использовать модуль telnetlib для подключения по Telnet.
-
 У класса CiscoTelnet, кроме __init__, должно быть, как минимум, два метода:
 * _write_line - принимает как аргумент строку и отправляет на оборудование строку преобразованную в байты и добавляет перевод строки в конце.
   Метод _write_line должен использоваться внутри класса.
 * send_show_command - принимает как аргумент команду show и возвращает вывод полученный с обрудования
-
 Пример создания экземпляра класса:
 In [2]: from task_25_2 import CiscoTelnet
 
@@ -81,5 +77,5 @@ class CiscoTelnet:
 if __name__ == '__main__':
     t = CiscoTelnet('172.16.1.2', 'cisco', 'cisco', enable_password='cisco')
 #    print(t._write_line('logging 4.4.4.4'))
-    print(t.send_show_command('sh ip int brief'))
-#    print(t._write_line('logging 5.5.5.5'))
+    ts=t.send_show_command('sh ip int brief')
+    print(t._write_line('logging 5.5.5.5'))

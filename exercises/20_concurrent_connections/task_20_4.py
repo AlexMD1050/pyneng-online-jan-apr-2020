@@ -2,7 +2,8 @@
 """
 Задание 20.4
 
-Создать функцию send_commands_to_devices, которая отправляет команду show или config на разные устройства в параллельных потоках, а затем записывает вывод команд в файл.
+Создать функцию send_commands_to_devices, которая отправляет команду show или config на разные устройства в параллельных
+потоках, а затем записывает вывод команд в файл.
 
 Параметры функции:
 * devices - список словарей с параметрами подключения к устройствам
@@ -82,3 +83,67 @@ R3#
 
 Для выполнения задания можно создавать любые дополнительные функции.
 """
+from netmiko import ConnectHandler
+import yaml
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from itertools import repeat
+import time
+from datetime import datetime
+import logging
+
+def send_show(device_dict, command):
+    start_msg = "===> {} Connection: {}"
+    ip = device_dict["ip"]
+    print(start_msg.format(datetime.now().time(), ip))
+    if ip == "172.16.1.3":
+        time.sleep(5)
+    with ConnectHandler(**device_dict) as ssh:
+        ssh.enable()
+        name = ssh.find_prompt()
+        result = ssh.send_command(command, strip_command=False)
+    return (name + result)
+
+def send_config_commands(device, commands, log = True):
+    with ConnectHandler(**device) as ssh:
+        ssh.enable()
+        output = ssh.send_config_set(commands,)
+        ip = device['ip']
+        if log == True:
+            print('Подключаюсь к {}...'.format(ip))
+        else:
+            pass
+        return output
+
+def send_command_to_devices(devices, show='', config='', filename='',limit=2):
+    if len(show) != 0:   # проверка строки на наличие знаков - True/Folse  не заработала почемуто
+        print('We have show')
+        with ThreadPoolExecutor(max_workers=limit) as executor:
+            future_list = []
+            for device in devices:
+                future = executor.submit(send_show, device, show)
+                future_list.append(future)
+                with open(filename, 'w') as file:
+                    for f in as_completed(future_list):
+                        i = str(f.result())
+                        file.write(i + '\n')
+    elif len(config)!= 0:
+        print('we have CONFIG')
+        with ThreadPoolExecutor(max_workers=limit) as executor:
+            future_list = []
+            for device in devices:
+                future = executor.submit(send_config_commands, device, config)
+                future_list.append(future)
+                with open(filename, 'w') as file:
+                    for f in as_completed(future_list):
+#                        print(f.result())
+                        i = str(f.result())
+                        file.write(i + '\n')
+    else:
+        print("Error!!!")
+
+if __name__ == "__main__":
+    with open('test.yaml') as f:
+        templates = yaml.load(f)
+    list_of_dict = templates['routers']
+    result = send_command_to_devices(list_of_dict, show='sh clock', limit =1, filename='task_20_4_out.txt')
+#    result = send_command_to_devices(list_of_dict, config='logging 6.6.6.6',filename='task_20_4_out.txt', limit=1)

@@ -25,6 +25,7 @@ def send_show(device_dict, command):
 
     with ConnectHandler(**device_dict) as ssh:
         ssh.enable()
+        a = ssh.enable()
         result = ssh.send_command(command)
         logging.info(received_msg.format(datetime.now().time(), ip))
     return {ip: result}

@@ -32,12 +32,54 @@ Ethernet0/1                unassigned      YES NVRAM  administratively down down
 
 
 Для выполнения задания можно создавать любые дополнительные функции.
-
 Проверить работу функции на устройствах из файла devices.yaml и словаре commands
 """
+from netmiko import ConnectHandler
+import yaml
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from itertools import repeat
+import time
+from datetime import datetime
+import logging
 
 commands = {
     "192.168.100.1": "sh ip int br",
     "192.168.100.2": "sh arp",
     "192.168.100.3": "sh ip int br",
 }
+
+commands2 = {
+    "172.16.1.2": "sh ip int br",
+    "172.16.1.3": "sh arp",
+    "172.16.1.2": "sh ip int br",
+}
+def send_show(device_dict, command):
+    start_msg = "===> {} Connection: {}"
+    ip = device_dict["ip"]
+    print(start_msg.format(datetime.now().time(), ip))
+    if ip == "172.16.1.3":
+        time.sleep(5)
+    with ConnectHandler(**device_dict) as ssh:
+        ssh.enable()
+        name = ssh.find_prompt()
+        result = ssh.send_command(command, strip_command=False)
+    return (name + result)
+
+def send_command_to_devices(devices, commands_dict,filename ,limit=3):
+    with ThreadPoolExecutor(max_workers=limit) as executor:
+        future_list = []
+        for device in devices:
+            ip = device['ip']
+            comm = commands_dict[ip]
+            future = executor.submit(send_show, device, comm)
+            future_list.append(future)
+            with open(filename, 'w') as file:
+                for f in as_completed(future_list):
+                    i = str(f.result())
+                    file.write(i + '\n')
+
+if __name__ == "__main__":
+    with open('test.yaml') as f:
+        templates = yaml.load(f)
+    list_of_dict = templates['routers']
+    result = send_command_to_devices(list_of_dict, commands_dict=commands2,filename='task_20_3_out.txt', limit=1)

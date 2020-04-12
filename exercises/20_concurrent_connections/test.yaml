@@ -1,0 +1,14 @@
+routers:
+- device_type: cisco_ios
+  ip: 172.16.1.2
+  username: cisco
+  password: cisco
+  secret: cisco
+
+- device_type: cisco_ios
+  ip: 172.16.1.3
+  username: cisco
+  password: cisco
+  secret: cisco
+
+

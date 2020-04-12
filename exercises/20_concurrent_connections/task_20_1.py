@@ -17,7 +17,7 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 
 def ping_ip_addres(ip):
-    list_ok = []    #УТОЧНИЛ - уточнить почему переменные надо создавать в функции
+    list_ok = []
     list_not_ok = []
 #    ip_ping = 'ping {} -n 2'.format(ip) # как будет выглядеть текст команды
 #    result = subprocess.run(ip_ping, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -25,7 +25,6 @@ def ping_ip_addres(ip):
     result = subprocess.run(["ping", "-n", "1", ip], stdout=subprocess.PIPE, stderr=subprocess.PIPE)    #Windows
     r = result.returncode   # говорит о том что сама команда выполнилась успешно
     out = result.stdout.decode('cp866')   #for lin ""utf-8"
-    ip_tuple = ()
 #    time.sleep(15)  #в выводе видна задержка в выполнении в зависимости от количества потоков
     if r == 0 and not "узел недоступен" in out:  # если успешно выполняется команда и узел доступен!!
         list_ok.append(ip)
@@ -35,18 +34,17 @@ def ping_ip_addres(ip):
     ip_tuple = (list_ok, list_not_ok)
     return ip_tuple
 
-def ping_ip_addresses(list_ip, limit):
+def ping_ip_addresses(ip_list, limit):
     with ThreadPoolExecutor(max_workers=limit) as executor:
-        result = executor.map(ping_ip_addres, list_ip)  #возвращает генератор
+        result = executor.map(ping_ip_addres, ip_list)  #возвращает генератор
     list_a = [] #список доступных адресов
     list_un_a = []  #список недоступных адресов
     for a1 in result:
-#        print(f'a1 is = {a1}')
         la1_0 = len(a1[0])
         la1_1 = len(a1[1])
-        if la1_0 == 1:  #с учетом что функция работает только с одним адресом
+        if la1_0 == 1:  #с учетом что функция "ping_ip_addres" работает только с одним адресом
             list_a.append(a1[0][0])
-        elif la1_1 ==1:
+        elif la1_1 == 1:
             list_un_a.append(a1[1][0])
     tup_result = (list_a, list_un_a)
     return tup_result

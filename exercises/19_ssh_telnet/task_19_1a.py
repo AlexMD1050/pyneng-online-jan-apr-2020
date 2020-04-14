@@ -12,6 +12,7 @@ from netmiko.ssh_exception import NetmikoAuthenticationException
 from netmiko.ssh_exception import *
 import yaml
 from pprint import pprint
+import sys
 
 command = 'sh ip int brief'
 # task_19_1
@@ -31,6 +32,7 @@ def send_show_command(device, command):
     except NetmikoAuthenticationException:
         result = "Authentication failure: unable to connect"
         print(result)
+        sys.stdout.write(result)
     return result
 
 if __name__ == "__main__":

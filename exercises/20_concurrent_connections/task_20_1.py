@@ -34,7 +34,7 @@ def ping_ip_addres(ip):
     ip_tuple = (list_ok, list_not_ok)
     return ip_tuple
 
-def ping_ip_addresses(ip_list, limit):
+def ping_ip_addresses(ip_list, limit=3):
     with ThreadPoolExecutor(max_workers=limit) as executor:
         result = executor.map(ping_ip_addres, ip_list)  #возвращает генератор
     list_a = [] #список доступных адресов
@@ -51,5 +51,6 @@ def ping_ip_addresses(ip_list, limit):
 
 if __name__ == "__main__":
     l_ip = ['172.16.1.1', '172.16.1.2', '172.16.1.3', '172.16.1.4', '172.16.1.5' ]
+    list_of_ips = ["1.1.1", "8.8.8.8", "8.8.4.4", "8.8.7.1"]
 #    print(ping_ip_addresses(l_ip))
-    print(ping_ip_addresses(l_ip, 2))
+    print(ping_ip_addresses(list_of_ips, 2))

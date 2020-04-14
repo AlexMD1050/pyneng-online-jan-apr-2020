@@ -60,5 +60,6 @@ def send_commands(device, **kwargs):
         print('something wrong in ' + kwargs)
     return result
 
+if __name__=="__main__":
 #print(send_commands(device, show = 'sh ip int br' ))
-print(send_commands(device, config=["logging 10.255.255.1", "logging buffered 20010", "no logging console"]))
+    print(send_commands(device, config=["logging 10.255.255.1", "logging buffered 20010", "no logging console"]))
